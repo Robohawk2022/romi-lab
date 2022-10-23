@@ -13,6 +13,8 @@ robot.
 Things to mess around with:
 * Experiment with switching the drive modes to see what happens.
 * Try to drive your robot straight for a ways and see if it drifts to one side.
+    - Why do you think that's happening? 
+    - How do you think you could fix it?
 
 ## Build your own drive code
 
