@@ -46,6 +46,9 @@
       "PIDController[1]": {
         "open": true
       },
+      "Robot Parts": {
+        "open": true
+      },
       "Romi": {
         "open": true
       },

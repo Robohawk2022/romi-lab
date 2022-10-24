@@ -19,19 +19,19 @@ import frc.robot.RobotParts;
  * to where they should be.
  * 
  */
-public class PIDPositionControlledRobot extends TimedRobot {
+public class PIDTurningControlledRobot extends TimedRobot {
 
     private RobotParts parts;
     private XboxController controller;
 
-    // Adjustable properties: how far to move with each push of a button, and top speed
-    private double distanceIncrement;
+    // Adjustable properties: how far to turn with each push of a button, and top speed
+    private double angleIncrement;
     private double maxSpeed;
 
     // These capture the state of the robot - where we want to be, where we are, how
     // current speed of the wheels.
-    private double targetDistance;
-    private double currentDistance;
+    private double targetAngle;
+    private double currentAngle;
     private double desiredSpeed;
 
     // This is the controller we use to calculate the adjustment required
@@ -43,24 +43,27 @@ public class PIDPositionControlledRobot extends TimedRobot {
         parts = new RobotParts();
         controller = new XboxController(0);
 
-        distanceIncrement = 12;
-        maxSpeed = 0.7;
-        targetDistance = 0;
-        currentDistance = 0;
+        angleIncrement = 90;
+        maxSpeed = 0.6;
+        targetAngle = 0;
+        currentAngle = 0;
         desiredSpeed = 0;
+
         pidController = new PIDController(1.0, 0, 0);
+        pidController.enableContinuousInput(-180, 180);
+        pidController.setTolerance(5.0);
 
         SmartDashboard.putData("PID Controller", pidController);
         SmartDashboard.putData("PID Robot", (builder) -> {
 
             // Read only properties
-            builder.addDoubleProperty("Target Distance", () -> targetDistance, null);
-            builder.addDoubleProperty("Current Distance", () -> currentDistance, null);
+            builder.addDoubleProperty("Target Angle", () -> targetAngle, null);
+            builder.addDoubleProperty("Current Angle", () -> currentAngle, null);
             builder.addDoubleProperty("Desired Speed", () -> desiredSpeed, null);
 
             // Read-write properties
             builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
-            builder.addDoubleProperty("Distance Increment", () -> distanceIncrement, (v) -> distanceIncrement = v);
+            builder.addDoubleProperty("Angle Increment", () -> angleIncrement, (v) -> angleIncrement = v);
         });
     }
 
@@ -80,33 +83,37 @@ public class PIDPositionControlledRobot extends TimedRobot {
         parts.stop();
         parts.resetEncoders();
         
-        // We use the left wheel's encoder to represent position. The left and right
-        // wheels should report roughly the same position.
-        targetDistance = parts.leftEncoder.getDistance();
+        targetAngle = parts.getAngle();
     }
 
     @Override
     public void teleopPeriodic() {
 
         // Capture the current position of the wheels.
-        currentDistance = parts.leftEncoder.getDistance();
+        currentAngle = parts.getAngle();
 
         // Adjust the target distance based on button presses.
         if (controller.getYButtonPressed()) {
-            targetDistance += distanceIncrement;
+            targetAngle += angleIncrement;
+            if (targetAngle > 180) {
+                targetAngle = targetAngle - 360;
+            }
         } else if (controller.getAButtonPressed()) {
-            targetDistance -= distanceIncrement;
+            targetAngle -= angleIncrement;
+            if (targetAngle < -180) {
+                targetAngle = targetAngle + 360;
+            }
         } else if (controller.getBButtonPressed()) {
-            targetDistance = currentDistance;
+            targetAngle = currentAngle;
         }
 
         // Determine the correct wheel speed based on the current and target distance
-        desiredSpeed = pidController.calculate(currentDistance, targetDistance);
+        desiredSpeed = pidController.calculate(currentAngle, targetAngle);
 
         // Clamp the speed so we don't go too fast
-        desiredSpeed = MathUtil.clamp(desiredSpeed / distanceIncrement, -maxSpeed, maxSpeed);
+        desiredSpeed = MathUtil.clamp(desiredSpeed / angleIncrement, -maxSpeed, maxSpeed);
 
         // Let's do this thing.
-        parts.drive(desiredSpeed);
+        parts.drive.tankDrive(desiredSpeed / 2, -desiredSpeed / 2);
     }
 }

@@ -58,8 +58,8 @@ public class RobotParts {
         SmartDashboard.putData("Robot Parts", (builder) -> {
             builder.addDoubleProperty("Encoder Left (in)", leftEncoder::getDistance, null);
             builder.addDoubleProperty("Encoder Right (in)", rightEncoder::getDistance, null);
-            builder.addDoubleProperty("Gyro Angle (deg)", gyro::getAngle, null);
-            builder.addDoubleProperty("Gyro Rate (deg/sec)", gyro::getRate, null);
+            builder.addDoubleProperty("Gyro Angle (deg)", this::getAngle, null);
+            builder.addDoubleProperty("Gyro Rate (dps)", gyro::getRate, null);
         });
     }
 
@@ -83,5 +83,20 @@ public class RobotParts {
      */
     public void drive(double speed) {
         drive.tankDrive(speed, speed);
+    }
+
+    /**
+     * Convenience method to read the current angle from the gyro to within a degree. This
+     * is handy because fractions of degrees are usually too small to worry about.
+     */
+    public double getAngle() {
+        double angle = Math.round(gyro.getAngle());
+        while (angle > 180) {
+            angle = angle - 360;
+        }
+        while (angle < -180) {
+            angle = angle + 360;
+        }
+        return angle;
     }
 }
