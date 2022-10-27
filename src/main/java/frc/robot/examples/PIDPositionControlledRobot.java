@@ -28,14 +28,9 @@ public class PIDPositionControlledRobot extends TimedRobot {
     private double distanceIncrement;
     private double maxSpeed;
 
-    // These capture the state of the robot - where we want to be, where we are, how
-    // current speed of the wheels.
-    private double targetDistance;
-    private double currentDistance;
-    private double desiredSpeed;
-
     // This is the controller we use to calculate the adjustment required
-    private PIDController pidController;
+    private PIDController leftPid;
+    private PIDController rightPid;
 
     @Override
     public void robotInit() {
@@ -45,20 +40,16 @@ public class PIDPositionControlledRobot extends TimedRobot {
 
         distanceIncrement = 12;
         maxSpeed = 0.7;
-        targetDistance = 0;
-        currentDistance = 0;
-        desiredSpeed = 0;
-        pidController = new PIDController(1.0, 0, 0);
 
-        SmartDashboard.putData("PID Controller", pidController);
+        leftPid = new PIDController(1.0, 0, 0);
+        leftPid.setTolerance(0.5);
+
+        rightPid = new PIDController(1.0, 0, 0);
+        rightPid.setTolerance(0.5);
+
+        SmartDashboard.putData("PID Controller/Left", leftPid);
+        SmartDashboard.putData("PID Controller/Right", rightPid);
         SmartDashboard.putData("PID Robot", (builder) -> {
-
-            // Read only properties
-            builder.addDoubleProperty("Target Distance", () -> targetDistance, null);
-            builder.addDoubleProperty("Current Distance", () -> currentDistance, null);
-            builder.addDoubleProperty("Desired Speed", () -> desiredSpeed, null);
-
-            // Read-write properties
             builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
             builder.addDoubleProperty("Distance Increment", () -> distanceIncrement, (v) -> distanceIncrement = v);
         });
@@ -76,37 +67,47 @@ public class PIDPositionControlledRobot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-       
         parts.stop();
         parts.resetEncoders();
-        
-        // We use the left wheel's encoder to represent position. The left and right
-        // wheels should report roughly the same position.
-        targetDistance = parts.leftEncoder.getDistance();
+        resetPids();
+    }
+
+    private void incrementPids(double amount) {
+        leftPid.setSetpoint(leftPid.getSetpoint() + amount);
+        rightPid.setSetpoint(rightPid.getSetpoint() + amount);
+    }
+
+    private void resetPids() {
+        leftPid.setSetpoint(parts.leftEncoder.getDistance());
+        rightPid.setSetpoint(parts.rightEncoder.getDistance());
     }
 
     @Override
     public void teleopPeriodic() {
 
-        // Capture the current position of the wheels.
-        currentDistance = parts.leftEncoder.getDistance();
+        // Hitting the B button should reset the PIDs and stop the robot.
+        if (controller.getBButtonPressed()) {
+            parts.stop();
+            resetPids();
+            return;
+        }
 
         // Adjust the target distance based on button presses.
         if (controller.getYButtonPressed()) {
-            targetDistance += distanceIncrement;
+            incrementPids(distanceIncrement);
         } else if (controller.getAButtonPressed()) {
-            targetDistance -= distanceIncrement;
-        } else if (controller.getBButtonPressed()) {
-            targetDistance = currentDistance;
+            incrementPids(-distanceIncrement);
         }
 
         // Determine the correct wheel speed based on the current and target distance
-        desiredSpeed = pidController.calculate(currentDistance, targetDistance);
+        double leftSpeed = leftPid.calculate(parts.leftEncoder.getDistance());
+        double rightSpeed = leftPid.calculate(parts.rightEncoder.getDistance());
 
         // Clamp the speed so we don't go too fast
-        desiredSpeed = MathUtil.clamp(desiredSpeed / distanceIncrement, -maxSpeed, maxSpeed);
+        leftSpeed = MathUtil.clamp(leftSpeed / distanceIncrement, -maxSpeed, maxSpeed);
+        rightSpeed = MathUtil.clamp(rightSpeed / distanceIncrement, -maxSpeed, maxSpeed);
 
         // Let's do this thing.
-        parts.drive(desiredSpeed);
+        parts.drive.tankDrive(leftSpeed, rightSpeed);
     }
 }
