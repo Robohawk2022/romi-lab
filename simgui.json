@@ -11,7 +11,12 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/SmartDashboard/Drive Mode": "String Chooser",
+      "/SmartDashboard/PID - Left Drive": "PIDController",
+      "/SmartDashboard/PID - Right Drive": "PIDController",
+      "/SmartDashboard/PID - Turn": "PIDController",
       "/SmartDashboard/PID Controller": "PIDController",
       "/SmartDashboard/PIDController[1]": "PIDController"
     },
@@ -46,7 +51,7 @@
       "PIDController[1]": {
         "open": true
       },
-      "Robot Parts": {
+      "Pad Driver": {
         "open": true
       },
       "Romi": {
