@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.romi.RomiMotor;
 import frc.robot.examples.DualModeDrivingRobot;
 import frc.robot.examples.ManualPositionControlledRobot;
 import frc.robot.examples.OnOffRobot;
@@ -9,9 +10,6 @@ import frc.robot.examples.PIDTurningControlledRobot;
 import frc.robot.examples.TankDrivingRobot;
 
 public final class Main {
-
-    private Main() {
-    }
 
     public static void main(String... args) {
         // RobotBase.startRobot(DualModeDrivingRobot::new);

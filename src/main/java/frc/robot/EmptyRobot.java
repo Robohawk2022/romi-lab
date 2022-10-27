@@ -37,5 +37,8 @@ public class EmptyRobot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     // what do we do now?
+    if (controller.getAButtonPressed()) {
+        
+    }
   }
 }
