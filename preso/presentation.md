@@ -89,12 +89,37 @@ motor.set(0.75)
 ```java
 double desiredSpeed;
 boolean isMoving;
+String message;
 
 if (!isMoving) {
     desiredSpeed = 10.3;
 }
 	
 if (desiredSpeed < 15.4) {
+    message = "speed up!";
+}
+```
+
+---
+
+# Classes
+
+```java
+public OnOffRobot {
+
+    boolean spinning;
+    double currentSpeed;
+    double maxSpeed;
+    double speedIncrement;
+    RobotParts parts;
+    
+    public void teleopInit() {
+        // can use variables in here
+    }
+
+    public void teleopPeriodic() {
+        // can use variables in here
+    }
 }
 ```
 
@@ -121,26 +146,6 @@ backLeftWheelAngle = wrapAngle(backLeftWheelAngle);
 
 ---
 
-# Classes
-
-```java
-public OnOffRobot {
-
-    boolean spinning;
-    double currentSpeed;
-    double maxSpeed;
-    double speedIncrement;
-    
-    public void teleopInit() {
-    }
-
-    public void teleopPeriodic() {
-    }
-}
-```
-
----
-
 # Objects
 
 ```java
@@ -154,6 +159,8 @@ motor.setIdleMode(IdleMode.kBrake);
 motor.setInverted(false);
 motor.setOpenLoopRampRate(0.5);
 motor.setClosedLoopRampRate(0.5);
+
+System.err.println("foo");
 ```
 
 ---
@@ -169,6 +176,23 @@ public static void main(String [] args) {
 @Override
 public void teleopPeriodic() {
 }
+```
+
+---
+
+# Comments
+
+```java
+
+public static void main(String [] args) {
+    // these are for leaving notes to ourselves
+}
+
+/**
+ * These are for when
+ * we have a lot to say
+ */
+
 ```
 
 ---
