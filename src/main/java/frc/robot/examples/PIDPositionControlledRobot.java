@@ -25,7 +25,7 @@ public class PIDPositionControlledRobot extends TimedRobot {
     private XboxController controller;
 
     // Adjustable properties: how far to move with each push of a button, and top speed
-    private double distanceIncrement;
+    private double increment;
     private double maxSpeed;
 
     // This is the controller we use to calculate the adjustment required
@@ -38,7 +38,7 @@ public class PIDPositionControlledRobot extends TimedRobot {
         parts = new RobotParts();
         controller = new XboxController(0);
 
-        distanceIncrement = 12;
+        increment = 12;
         maxSpeed = 0.7;
 
         leftPid = new PIDController(1.0, 0, 0);
@@ -51,7 +51,7 @@ public class PIDPositionControlledRobot extends TimedRobot {
         SmartDashboard.putData("PID Controller/Right", rightPid);
         SmartDashboard.putData("PID Robot", (builder) -> {
             builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
-            builder.addDoubleProperty("Distance Increment", () -> distanceIncrement, (v) -> distanceIncrement = v);
+            builder.addDoubleProperty("Distance Increment", () -> increment, (v) -> increment = v);
         });
     }
 
@@ -94,9 +94,9 @@ public class PIDPositionControlledRobot extends TimedRobot {
 
         // Adjust the target distance based on button presses.
         if (controller.getYButtonPressed()) {
-            incrementPids(distanceIncrement);
+            incrementPids(increment);
         } else if (controller.getAButtonPressed()) {
-            incrementPids(-distanceIncrement);
+            incrementPids(-increment);
         }
 
         // Determine the correct wheel speed based on the current and target distance
@@ -104,8 +104,8 @@ public class PIDPositionControlledRobot extends TimedRobot {
         double rightSpeed = leftPid.calculate(parts.rightEncoder.getDistance());
 
         // Clamp the speed so we don't go too fast
-        leftSpeed = MathUtil.clamp(leftSpeed / distanceIncrement, -maxSpeed, maxSpeed);
-        rightSpeed = MathUtil.clamp(rightSpeed / distanceIncrement, -maxSpeed, maxSpeed);
+        leftSpeed = MathUtil.clamp(leftSpeed, -maxSpeed, maxSpeed);
+        rightSpeed = MathUtil.clamp(rightSpeed, -maxSpeed, maxSpeed);
 
         // Let's do this thing.
         parts.drive.tankDrive(leftSpeed, rightSpeed);

@@ -17,7 +17,7 @@ import frc.robot.RobotParts;
  * that's probably enough.
  * 
  * - When you're trying to hit a target, you have to consider the possibility
- * that you're going to overshoot. If you account for that, then you have to
+ * that you're going to overshoot. Once you account for that, then you have to
  * consider the possibility that you're going to keep oscillating around the
  * set point.
  * 
@@ -27,15 +27,16 @@ public class ManualPositionControlledRobot extends TimedRobot {
     private RobotParts parts;
     private XboxController controller;
 
-    // These capture the state of the robot - where we want to be, where we are, how
-    // far off we are, and the current speed of the wheels.
+    // These capture the state of the robot - where we want to be, where we 
+    // are, how far off we are, and the current speed of the wheels.
     private double targetDistance;
     private double currentDistance;
     private double deltaDistance;
     private double drivePower;
 
-    // Adjustable settings to determine how close we want to get to our target
-    // distance, how fast to adjust position forward/backward
+    // Adjustable settings to determine how far to go, how close we want to
+    // get to our target distance, and how fast to adjust position forward/backward
+    private double increment;
     private double tolerance;
     private double forwardPower;
     private double reversePower;
@@ -46,12 +47,13 @@ public class ManualPositionControlledRobot extends TimedRobot {
         parts = new RobotParts();
         controller = new XboxController(0);
 
+        increment = 12;
         targetDistance = 0;
         currentDistance = 0;
         deltaDistance = 0;
         drivePower = 0;
         forwardPower = 0.7;
-        reversePower = 0.3;
+        reversePower = 0.7;
         tolerance = 0.1;
 
         SmartDashboard.putData("Lousy Controller", (builder) -> {
@@ -63,6 +65,7 @@ public class ManualPositionControlledRobot extends TimedRobot {
             builder.addDoubleProperty("Power - Current", () -> drivePower, null);
 
             // Read-write properties
+            builder.addDoubleProperty("Distance - Increment", () -> increment, (v) -> increment = v);
             builder.addDoubleProperty("Tolerance", () -> tolerance, (v) -> tolerance = v);
             builder.addDoubleProperty("Power Forward", () -> forwardPower, (v) -> forwardPower = v);
             builder.addDoubleProperty("Power Reverse", () -> reversePower, (v) -> reversePower = v);
@@ -98,7 +101,7 @@ public class ManualPositionControlledRobot extends TimedRobot {
 
         // Adjust the target distance based on button presses.
         if (controller.getYButtonPressed()) {
-            targetDistance += 12;
+            targetDistance += increment;
         } else if (controller.getBButtonPressed()) {
             targetDistance = currentDistance;
         }
@@ -106,7 +109,8 @@ public class ManualPositionControlledRobot extends TimedRobot {
         // Determine how far away we are from the target distance.
         deltaDistance = targetDistance - currentDistance;
 
-        // If we not within the tolerance, we need to move either forward or backward.
+        // If we're not within the tolerance, we need to move either
+        // forward or backward at the correct speed.
         drivePower = 0;
         if (Math.abs(deltaDistance) > tolerance) {
             if (deltaDistance > 0) {

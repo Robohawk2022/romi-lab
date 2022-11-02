@@ -165,3 +165,27 @@ This will do something once the left wheel is within one inch of a target positi
     if (Math.abs(delta) < 1) {
         // Do something
     }
+
+# Controller Mapping
+
+| Axis          | Port |
+| ============= | ==== |
+| Left X        |    0 |
+| Left Y        |    1 |
+| Left Trigger  |    2 |
+| Right Trigger |    3 |
+| Right X       |    4 |
+| Right Y       |    5 |
+
+| Button        | Port |
+| ============= | ==== |
+| A             |    1 |
+| B             |    2 |
+| X             |    3 |
+| Y             |    4 |
+| Left Bumper   |    5 |
+| Right Bumper  |    6 |
+| Back          |    7 |
+| Start         |    8 |
+| Left Stick    |    9 |
+| Right Stick   |   10 |

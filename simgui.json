@@ -13,6 +13,7 @@
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/SmartDashboard/Allow Squares?": "String Chooser",
       "/SmartDashboard/Drive Mode": "String Chooser",
       "/SmartDashboard/PID - Left Drive": "PIDController",
       "/SmartDashboard/PID - Right Drive": "PIDController",
@@ -30,6 +31,9 @@
   },
   "NetworkTables": {
     "SmartDashboard": {
+      "Drive Properties": {
+        "open": true
+      },
       "Lousy Controller": {
         "open": true
       },
@@ -52,6 +56,9 @@
         "open": true
       },
       "Pad Driver": {
+        "open": true
+      },
+      "Robot Parts": {
         "open": true
       },
       "Romi": {
