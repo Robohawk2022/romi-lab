@@ -19,6 +19,8 @@
       "/SmartDashboard/PID - Right Drive": "PIDController",
       "/SmartDashboard/PID - Turn": "PIDController",
       "/SmartDashboard/PID Controller": "PIDController",
+      "/SmartDashboard/PID Controller/Left": "PIDController",
+      "/SmartDashboard/PID Controller/Right": "PIDController",
       "/SmartDashboard/PIDController[1]": "PIDController"
     },
     "windows": {
@@ -47,6 +49,12 @@
         "open": true
       },
       "PID Controller": {
+        "Left": {
+          "open": true
+        },
+        "Right": {
+          "open": true
+        },
         "open": true
       },
       "PID Robot": {

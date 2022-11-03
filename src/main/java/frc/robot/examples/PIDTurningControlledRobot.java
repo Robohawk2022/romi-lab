@@ -33,6 +33,7 @@ public class PIDTurningControlledRobot extends TimedRobot {
     private double targetAngle;
     private double currentAngle;
     private double desiredSpeed;
+    private double tolerance;
 
     // This is the controller we use to calculate the adjustment required
     private PIDController pidController;
@@ -48,10 +49,11 @@ public class PIDTurningControlledRobot extends TimedRobot {
         targetAngle = 0;
         currentAngle = 0;
         desiredSpeed = 0;
+        tolerance = 5.0;
 
         pidController = new PIDController(1.0, 0, 0);
         pidController.enableContinuousInput(-180, 180);
-        pidController.setTolerance(5.0);
+        pidController.setTolerance(tolerance);
 
         SmartDashboard.putData("PID Controller", pidController);
         SmartDashboard.putData("PID Robot", (builder) -> {
@@ -62,8 +64,12 @@ public class PIDTurningControlledRobot extends TimedRobot {
             builder.addDoubleProperty("Desired Speed", () -> desiredSpeed, null);
 
             // Read-write properties
-            builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
             builder.addDoubleProperty("Angle Increment", () -> angleIncrement, (v) -> angleIncrement = v);
+            builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
+            builder.addDoubleProperty("Tolerance", () -> tolerance, (v) -> {
+                tolerance = v;
+                pidController.setTolerance(tolerance);
+            });
         });
     }
 
@@ -78,16 +84,28 @@ public class PIDTurningControlledRobot extends TimedRobot {
     }
 
     @Override
-    public void teleopInit() {
-       
+    public void teleopInit() {       
         parts.stop();
         parts.resetEncoders();
-        
+        resetPids();
+    }
+
+    private void resetPids() {
         targetAngle = parts.getAngle();
+        pidController.reset();
+        pidController.setTolerance(tolerance);
+        pidController.setSetpoint(targetAngle);
     }
 
     @Override
     public void teleopPeriodic() {
+
+        // Hitting the B button should reset the PIDs and stop the robot.
+        if (controller.getBButtonPressed()) {
+            parts.stop();
+            resetPids();
+            return;
+        }
 
         // Capture the current position of the wheels.
         currentAngle = parts.getAngle();
@@ -104,8 +122,6 @@ public class PIDTurningControlledRobot extends TimedRobot {
             if (targetAngle < -180) {
                 targetAngle = targetAngle + 360;
             }
-        } else if (controller.getBButtonPressed()) {
-            targetAngle = currentAngle;
         }
 
         // Determine the correct wheel speed based on the current and target distance

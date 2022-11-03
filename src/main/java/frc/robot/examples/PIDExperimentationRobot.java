@@ -33,6 +33,8 @@ public class PIDExperimentationRobot extends TimedRobot {
     public void robotInit() {
 
         parts = new RobotParts();
+        parts.drive.setSafetyEnabled(false);
+
         controller = new XboxController(0);
 
         maxSpeed = 0.8;
@@ -74,7 +76,13 @@ public class PIDExperimentationRobot extends TimedRobot {
     }
 
     private void resetPids() {
+        
+        leftPid.reset();
+        leftPid.setTolerance(tolerance);
         leftPid.setSetpoint(parts.leftEncoder.getDistance());
+
+        rightPid.reset();
+        leftPid.setTolerance(tolerance);
         rightPid.setSetpoint(parts.rightEncoder.getDistance());
     }
 
@@ -92,8 +100,6 @@ public class PIDExperimentationRobot extends TimedRobot {
         double leftSpeed = leftPid.calculate(parts.leftEncoder.getDistance());
         double rightSpeed = rightPid.calculate(parts.rightEncoder.getDistance());
 
-
-        
         // Clamp the speed so we don't go too fast
         leftSpeed = MathUtil.clamp(leftSpeed, -maxSpeed, maxSpeed);
         rightSpeed = MathUtil.clamp(rightSpeed, -maxSpeed, maxSpeed);

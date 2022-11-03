@@ -27,6 +27,7 @@ public class PIDPositionControlledRobot extends TimedRobot {
     // Adjustable properties: how far to move with each push of a button, and top speed
     private double increment;
     private double maxSpeed;
+    private double tolerance;
 
     // This is the controller we use to calculate the adjustment required
     private PIDController leftPid;
@@ -36,22 +37,30 @@ public class PIDPositionControlledRobot extends TimedRobot {
     public void robotInit() {
 
         parts = new RobotParts();
+        parts.drive.setSafetyEnabled(false);
+
         controller = new XboxController(0);
 
         increment = 12;
         maxSpeed = 0.7;
+        tolerance = 0.5;
 
-        leftPid = new PIDController(1.0, 0, 0);
+        leftPid = new PIDController(0.15, 0.03, 0.05);        
         leftPid.setTolerance(0.5);
 
-        rightPid = new PIDController(1.0, 0, 0);
+        rightPid = new PIDController(0.15, 0.03, 0.05);
         rightPid.setTolerance(0.5);
 
         SmartDashboard.putData("PID Controller/Left", leftPid);
         SmartDashboard.putData("PID Controller/Right", rightPid);
         SmartDashboard.putData("PID Robot", (builder) -> {
-            builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
             builder.addDoubleProperty("Distance Increment", () -> increment, (v) -> increment = v);
+            builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
+            builder.addDoubleProperty("Tolerance", () -> tolerance, (v) -> {
+                tolerance = v;
+                leftPid.setTolerance(tolerance);
+                rightPid.setTolerance(tolerance);
+            });
         });
     }
 
