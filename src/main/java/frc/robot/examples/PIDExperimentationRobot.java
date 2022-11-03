@@ -9,8 +9,7 @@ import frc.robot.RobotParts;
 
 /**
  * 
- * This is another example of trying to drive wheels to a specific position. In
- * this case, we can move the robot forward or backwards.
+ * Allows experimentation with PID tuning algorithms.
  * 
  * This example shows you the following things:
  * 
@@ -19,18 +18,16 @@ import frc.robot.RobotParts;
  * to where they should be.
  * 
  */
-public class PIDPositionControlledRobot extends TimedRobot {
+public class PIDExperimentationRobot extends TimedRobot {
 
     private RobotParts parts;
     private XboxController controller;
 
-    // Adjustable properties: how far to move with each push of a button, and top speed
-    private double increment;
-    private double maxSpeed;
-
     // This is the controller we use to calculate the adjustment required
     private PIDController leftPid;
     private PIDController rightPid;
+    private double maxSpeed;
+    private double tolerance;
 
     @Override
     public void robotInit() {
@@ -38,20 +35,24 @@ public class PIDPositionControlledRobot extends TimedRobot {
         parts = new RobotParts();
         controller = new XboxController(0);
 
-        increment = 12;
-        maxSpeed = 0.7;
+        maxSpeed = 0.8;
+        tolerance = 0.5;
 
-        leftPid = new PIDController(1.0, 0, 0);
-        leftPid.setTolerance(0.5);
+        leftPid = new PIDController(1.0, 0, 0);        
+        leftPid.setTolerance(tolerance);
 
         rightPid = new PIDController(1.0, 0, 0);
-        rightPid.setTolerance(0.5);
+        rightPid.setTolerance(tolerance);
 
         SmartDashboard.putData("PID Controller/Left", leftPid);
         SmartDashboard.putData("PID Controller/Right", rightPid);
         SmartDashboard.putData("PID Robot", (builder) -> {
             builder.addDoubleProperty("Max Speed", () -> maxSpeed, (v) -> maxSpeed = v);
-            builder.addDoubleProperty("Distance Increment", () -> increment, (v) -> increment = v);
+            builder.addDoubleProperty("Tolerance", () -> tolerance, (v) -> {
+                tolerance = v;
+                leftPid.setTolerance(tolerance);
+                rightPid.setTolerance(tolerance);
+            });
         });
     }
 
@@ -72,11 +73,6 @@ public class PIDPositionControlledRobot extends TimedRobot {
         resetPids();
     }
 
-    private void incrementPids(double amount) {
-        leftPid.setSetpoint(leftPid.getSetpoint() + amount);
-        rightPid.setSetpoint(rightPid.getSetpoint() + amount);
-    }
-
     private void resetPids() {
         leftPid.setSetpoint(parts.leftEncoder.getDistance());
         rightPid.setSetpoint(parts.rightEncoder.getDistance());
@@ -92,17 +88,12 @@ public class PIDPositionControlledRobot extends TimedRobot {
             return;
         }
 
-        // Adjust the target distance based on button presses.
-        if (controller.getYButtonPressed()) {
-            incrementPids(increment);
-        } else if (controller.getAButtonPressed()) {
-            incrementPids(-increment);
-        }
-
         // Determine the correct wheel speed based on the current and target distance
         double leftSpeed = leftPid.calculate(parts.leftEncoder.getDistance());
         double rightSpeed = rightPid.calculate(parts.rightEncoder.getDistance());
 
+
+        
         // Clamp the speed so we don't go too fast
         leftSpeed = MathUtil.clamp(leftSpeed, -maxSpeed, maxSpeed);
         rightSpeed = MathUtil.clamp(rightSpeed, -maxSpeed, maxSpeed);

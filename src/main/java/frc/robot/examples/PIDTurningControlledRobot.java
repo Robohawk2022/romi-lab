@@ -92,7 +92,8 @@ public class PIDTurningControlledRobot extends TimedRobot {
         // Capture the current position of the wheels.
         currentAngle = parts.getAngle();
 
-        // Adjust the target distance based on button presses.
+        // Adjust the target angle based on button presses. Note that we are 
+        // "wrapping" the angle to make sure it's between -180 and 180.
         if (controller.getYButtonPressed()) {
             targetAngle += angleIncrement;
             if (targetAngle > 180) {
@@ -114,6 +115,7 @@ public class PIDTurningControlledRobot extends TimedRobot {
         desiredSpeed = MathUtil.clamp(desiredSpeed / angleIncrement, -maxSpeed, maxSpeed);
 
         // Let's do this thing.
-        parts.drive.tankDrive(desiredSpeed / 2, -desiredSpeed / 2);
+        parts.leftMotor.set(desiredSpeed / 2);
+        parts.rightMotor.set(-desiredSpeed / 2);
     }
 }
