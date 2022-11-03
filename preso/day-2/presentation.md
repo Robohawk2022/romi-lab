@@ -11,6 +11,26 @@ gyro.getAngle()
 
 ---
 
+# Open loop control
+
+* Calculate the output variables of the system (e.g. motor speed) based on simple formulas, and apply them.
+
+* The benefit of open loop is that it's *really* simple - we've already implemented multiple open-loop control systems.
+
+* The drawback is that it can't achieve a predictable result - it won't account for external disturbances like friction, battery loss, bent parts, etc.
+
+---
+
+# Closed loop control
+
+* Define a "setpoint" (e.g. target position/velocity) and use *feedback* from sensors to measure error. Calculate outputs based on error and apply them.
+
+* The benefit of closed loop is that it can ensure a target state (e.g. move forward exactly 12 inches) even  if disturbed.
+
+* The drawback is that it's much more complex and requires tuning.
+
+---
+
 # 2022 competition bot
 
 [.column]
@@ -83,6 +103,12 @@ Useful for turning to a specific heading, or rotating at a specific rate.
 
 ---
 
+# Java
+
+![](java.png)
+
+---
+
 # API (1/2)
 
 ```java
@@ -114,12 +140,6 @@ boolean b = controller.get{xxx}BumperPressed();
 double d = controller.get{Left/Right}{X/Y}();
 double d = controller.get{Left/Right}TriggerAxis();
 ```
-
----
-
-# Java
-
-![](java.png)
 
 ---
 
