@@ -32,7 +32,22 @@
     }
   },
   "NetworkTables": {
+    "LiveWindow": {
+      "open": true
+    },
+    "Romi": {
+      "Information": {
+        "open": true
+      },
+      "Status": {
+        "open": true
+      },
+      "open": true
+    },
     "SmartDashboard": {
+      "Drive Mode": {
+        "open": true
+      },
       "Drive Properties": {
         "open": true
       },
